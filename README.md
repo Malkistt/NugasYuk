@@ -50,7 +50,7 @@ Jalankan deretan perintah ini **sekali saja** saat pertama kali mengunduh proyek
 
 ```bash
 # 1. Clone repositori ke laptop
-git clone https://github.com/Malkistt/Project-NugasYuk.git
+git clone https://github.com/Malkistt/NugasYuk.git
 cd Project-NugasYuk
 
 # 2. Masuk ke branch utama dan tarik data terbaru
