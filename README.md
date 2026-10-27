@@ -111,14 +111,14 @@ Ketika fitur buatanmu sudah selesai dites dan siap digabungkan:
 
 ## Susunan Lengkap Tim NugasYuk (Kelompok 3)
 
-| Nama Anggota | Peran / Jabatan | Keterangan Tambahan | 
-| ----- | ----- | ----- | 
-| **Rahman Nur Fauzan** | PM / Developer (Frontend & Backend) | Ketua Kelompok, Modul Auth & Tugas | 
-| **Muhammad Faishal Al Bukhari** | Developer (Frontend & Backend) | Modul Kuis & Materi Drive | 
-| **Muhammad Hamzah Al Farisi** | Developer (Frontend & Backend) | Modul Absensi, Search, & Notifikasi | 
-| **Muhammad Ramdhan Al Qusyairi** | UI/UX Designer | Perancangan Flow, Figma, Prototipe | 
-| **Rasky Athoillah Sudiyana** | UI/UX Designer | Perancangan Flow, Figma, Prototipe | 
-| **Nadhifa Zahra Syaifi** | UI/UX Designer & Dokumentasi | Prototipe, Analisis Kebutuhan, Laporan | 
-| **R. Ersa Putri Sulaksana** | Dokumentasi | Panduan Pengguna, Laporan Akhir | 
+| Nama Anggota | Peran / Jabatan | 
+| ----- | ----- | 
+| **Rahman Nur Fauzan** | PM / Developer (Frontend & Backend) |
+| **Muhammad Faishal Al Bukhari** | Developer (Frontend & Backend) | 
+| **Muhammad Hamzah Al Farisi** | Developer (Frontend & Backend) | 
+| **Muhammad Ramdhan Al Qusyairi** | UI/UX Designer | 
+| **Rasky Athoillah Sudiyana** | UI/UX Designer | 
+| **Nadhifa Zahra Syaifi** | UI/UX Designer & Dokumentasi | 
+| **R. Ersa Putri Sulaksana** | Dokumentasi | 
 
 **Status Proyek:** Perencanaan & Development
