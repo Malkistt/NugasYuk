@@ -1,22 +1,31 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardDosen from "./pages/DashboardDosen";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="w-full min-h-screen bg-[#f8f9fa]">
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboarddosen" replace />} />
+      <Routes>
+        {/* Redirect Root ke Login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-          <Route path="/dashboarddosen" element={<DashboardDosen />} />
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          <Route path="/dashboard-dosen" element={<DashboardDosen />} />
-          <Route path="/dashboard" element={<DashboardDosen />} />
+        {/* Dashboard Routes */}
+        <Route path="/dashboarddosen" element={<DashboardDosen />} />
 
-          <Route path="*" element={<Navigate to="/dashboarddosen" replace />} />
-        </Routes>
-      </div>
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
