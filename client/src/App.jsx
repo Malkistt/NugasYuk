@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardDosen from "./pages/DashboardDosen";
+import DashboardMahasiswa from "./pages/DashboardMahasiswa";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
 
         {/* Dashboard Routes */}
         <Route path="/dashboarddosen" element={<DashboardDosen />} />
+        <Route path="/dashboardmahasiswa" element={<DashboardMahasiswa />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" replace />} />
