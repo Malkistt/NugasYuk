@@ -219,8 +219,8 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={
                     role === "mahasiswa"
-                      ? "nadia.rahma@student.cakrawala.ac.id"
-                      : "nadia.rahma@cakrawala.ac.id"
+                      ? "nadia.rahma@student.kampus.ac.id"
+                      : "nadia.rahma@kampus.ac.id"
                   }
                   className="h-[44px] w-full rounded-lg border border-slate-200 bg-white px-3 pr-11 text-[12px] text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                 />

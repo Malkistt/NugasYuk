@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
 
   // Membaca email dari state router, jika tidak ada gunakan default fallback
   const verifiedEmail =
-    location.state?.email || "nadia.rahma@student.cakrawala.ac.id";
+    location.state?.email || "nadia.rahma@student.kampus.ac.id";
 
   const isMinLength = password.length >= 8;
   const isMatch = password.length > 0 && password === confirmPassword;
