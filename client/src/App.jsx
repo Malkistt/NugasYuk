@@ -18,9 +18,6 @@ function App() {
     <BrowserRouter>
       <div className="w-full min-h-screen bg-[#f8f9fa]">
         <Routes>
-          {/* Default redirect ke /dashboarddosen */}
-          <Route path="/" element={<Navigate to="/dashboarddosen" replace />} />
-          
           {/* Dashboard Dosen */}
           <Route path="/dashboarddosen" element={<DashboardDosen />} />
 
