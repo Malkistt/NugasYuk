@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm">
             <BookOpen size={19} strokeWidth={2.2} className="text-indigo-600" />
           </span>
-          <span className="text-[15px] font-bold tracking-tight">ruangkuliah</span>
+          <span className="text-[15px] font-bold tracking-tight">NugasYuk</span>
         </div>
 
         <div className="absolute bottom-[13.5%] left-8 right-8 text-white xl:left-10 xl:right-10">
@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
               <BookOpen size={17} />
             </span>
-            <span className="text-sm font-bold">ruangkuliah</span>
+            <span className="text-sm font-bold">NugasYuk</span>
           </div>
           <a
             href="mailto:akademik@kampus.ac.id"
@@ -155,7 +155,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <footer className="flex flex-col items-center justify-between gap-3 pb-1 text-[10px] text-slate-400 sm:flex-row">
-          <span>© 2026 Ruangkuliah</span>
+          <span>© 2026 NugasYuk</span>
           <div className="flex items-center gap-2">
             <a href="#privasi" className="transition hover:text-indigo-600">Privasi</a>
             <span>·</span>
