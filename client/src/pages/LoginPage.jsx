@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   BookOpen,
@@ -16,17 +16,30 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setMessage(
-      "Tampilan login sudah siap. Hubungkan form ini ke layanan autentikasi untuk mengaktifkan proses masuk."
-    );
+    setLoading(true);
+
+    // Simulasi proses login sebelum integrasi API Backend
+    setTimeout(() => {
+      setLoading(false);
+
+      // Cek email untuk menentukan simulasi role redirect
+      if (email.toLowerCase().includes("dosen")) {
+        navigate("/dashboarddosen");
+      } else {
+        navigate("/mahasiswa/dashboard");
+      }
+    }, 600);
   };
 
   return (
     <main className="min-h-screen w-full bg-white font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 lg:grid lg:grid-cols-[43.1%_56.9%]">
+      {/* Sisi Kiri: Banner Visual */}
       <section className="relative hidden min-h-screen overflow-hidden bg-slate-800 lg:block">
         <img
           src={campusImage}
@@ -62,6 +75,7 @@ export default function LoginPage() {
         </div>
       </section>
 
+      {/* Sisi Kanan: Form Login */}
       <section className="relative flex min-h-screen flex-col px-6 py-7 sm:px-10 md:px-14 lg:px-16 xl:px-[7.5rem]">
         <div className="flex items-center justify-between lg:justify-end">
           <div className="flex items-center gap-2 text-slate-800 lg:hidden">
@@ -104,7 +118,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="nama@kampus.ac.id"
+                  placeholder="nama@cakrawala.ac.id"
                   className="h-[46px] w-full rounded-lg border border-slate-200 bg-white px-3 pr-11 text-[12px] text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                 />
                 <Mail size={16} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -147,7 +161,6 @@ export default function LoginPage() {
                 />
                 Ingat saya
               </label>
-              {/* Diubah rutenya mengarah ke ResetPasswordPage */}
               <Link to="/forgot-password" className="text-[11px] font-semibold text-indigo-600 transition hover:text-indigo-700">
                 Lupa password?
               </Link>
@@ -155,17 +168,12 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="flex h-[46px] w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 text-[12px] font-semibold text-white shadow-sm shadow-indigo-600/20 transition hover:bg-indigo-700 active:scale-[0.99]"
+              disabled={loading}
+              className="flex h-[46px] w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 text-[12px] font-semibold text-white shadow-sm shadow-indigo-600/20 transition hover:bg-indigo-700 active:scale-[0.99] disabled:opacity-60"
             >
               <ArrowRight size={15} />
-              Masuk ke Ruangkuliah
+              <span>{loading ? "Memproses..." : "Masuk ke Ruangkuliah"}</span>
             </button>
-
-            {message && (
-              <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-5 text-amber-800">
-                {message}
-              </p>
-            )}
           </form>
 
           <div className="my-6 flex items-center gap-3">
