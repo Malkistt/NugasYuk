@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowRight,
   BookOpen,
   Eye,
   EyeOff,
-  LockKeyhole,
   Mail,
   ShieldCheck,
   GraduationCap,
@@ -302,7 +300,7 @@ export default function RegisterPage() {
                   <a href="#privasi" className="text-indigo-600 hover:underline">
                     Kebijakan Privasi
                   </a>{" "}
-                  Ruangkuliah.
+                  NugasYuk.
                 </span>
               </label>
             </div>
@@ -333,7 +331,7 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <footer className="flex flex-col items-center justify-between gap-3 pb-1 text-[10px] text-slate-400 sm:flex-row">
-          <span>© 2026 Ruangkuliah</span>
+          <span>© 2026 NugasYuk</span>
           <div className="flex items-center gap-2">
             <a href="#privasi" className="transition hover:text-indigo-600">Privasi</a>
             <span>·</span>
