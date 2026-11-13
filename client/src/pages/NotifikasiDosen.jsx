@@ -12,9 +12,7 @@ import {
   ChevronRight,
   AlertTriangle,
   UserCheck,
-  FileText,
 } from "lucide-react";
-import { getSystemDateIndonesian } from "../utils/dateHelper";
 
 const INITIAL_NOTIFIKASI = [
   {
@@ -93,208 +91,351 @@ const INITIAL_NOTIFIKASI = [
 
 const ITEMS_PER_PAGE = 6;
 
-const KATEGORI_ICON = {
-  pengajuan: UserCheck,
-  pengumpulan: ClipboardList,
-  pelanggaran: AlertTriangle,
-  kuis: ListChecks,
-  penilaian: Award,
-  materi: FolderOpen,
-  absensi: CalendarCheck,
-  deadline: Clock,
-};
-
-const KATEGORI_COLOR = {
-  pengajuan: { bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
-  pengumpulan: { bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
-  pelanggaran: { bg: "bg-red-100", text: "text-red-700", dot: "bg-red-600" },
-  kuis: { bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
-  penilaian: { bg: "bg-yellow-100", text: "text-yellow-700", dot: "bg-yellow-500" },
-  materi: { bg: "bg-teal-100", text: "text-teal-700", dot: "bg-teal-500" },
-  absensi: { bg: "bg-indigo-100", text: "text-indigo-700", dot: "bg-indigo-500" },
-  deadline: { bg: "bg-orange-100", text: "text-orange-700", dot: "bg-orange-500" },
-};
-
 export default function NotifikasiDosen() {
   const navigate = useNavigate();
-  const [systemDate] = useState(() => getSystemDateIndonesian());
   const [notifikasiList, setNotifikasiList] = useState(INITIAL_NOTIFIKASI);
-  const [activeTab, setActiveTab] = useState("semua");
+  const [activeTab, setActiveTab] = useState("semua"); // "semua" | "belum_dibaca" | "sudah_dibaca"
   const [currentPage, setCurrentPage] = useState(1);
 
-  const unreadCount = notifikasiList.filter((n) => !n.isRead).length;
+  // Hitung statistik tab & ringkasan
+  const stats = useMemo(() => {
+    const semua = notifikasiList.length;
+    const unreadItems = notifikasiList.filter((n) => !n.isRead);
+    const belumDibaca = unreadItems.length;
+    const sudahDibaca = semua - belumDibaca;
 
-  const filteredList = useMemo(() => {
-    if (activeTab === "belum_dibaca") return notifikasiList.filter((n) => !n.isRead);
-    if (activeTab === "sudah_dibaca") return notifikasiList.filter((n) => n.isRead);
+    const pengajuanBaru = unreadItems.filter(
+      (n) => n.kategori === "pengajuan"
+    ).length;
+    const pengumpulanTugas = unreadItems.filter(
+      (n) => n.kategori === "pengumpulan"
+    ).length;
+    const pelanggaranDeteksi = unreadItems.filter(
+      (n) => n.kategori === "pelanggaran"
+    ).length;
+
+    return {
+      semua,
+      belumDibaca,
+      sudahDibaca,
+      pengajuanBaru,
+      pengumpulanTugas,
+      pelanggaranDeteksi,
+    };
+  }, [notifikasiList]);
+
+  // Filter berdasarkan tab aktif
+  const filteredNotifications = useMemo(() => {
+    if (activeTab === "belum_dibaca") {
+      return notifikasiList.filter((n) => !n.isRead);
+    }
+    if (activeTab === "sudah_dibaca") {
+      return notifikasiList.filter((n) => n.isRead);
+    }
     return notifikasiList;
   }, [notifikasiList, activeTab]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredList.length / ITEMS_PER_PAGE));
-  const pagedList = filteredList.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+  // Pagination logic
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredNotifications.length / ITEMS_PER_PAGE)
   );
+  const safeCurrentPage = Math.min(currentPage, totalPages);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
+  const paginatedNotifications = useMemo(() => {
+    const startIdx = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+    return filteredNotifications.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  }, [filteredNotifications, safeCurrentPage]);
+
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
     setCurrentPage(1);
   };
 
-  const handleMarkRead = (id) => {
+  const handleMarkAsRead = (id, e) => {
+    if (e) e.stopPropagation();
     setNotifikasiList((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      prev.map((item) => (item.id === id ? { ...item, isRead: true } : item))
     );
   };
 
-  const handleMarkAllRead = () => {
-    setNotifikasiList((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  const handleMarkAllAsRead = () => {
+    setNotifikasiList((prev) =>
+      prev.map((item) => ({ ...item, isRead: true }))
+    );
   };
 
-  const handleClickNotif = (notif) => {
-    handleMarkRead(notif.id);
-    navigate(notif.targetPath);
+  const handleNotificationClick = (item) => {
+    if (!item.isRead) {
+      handleMarkAsRead(item.id);
+    }
+    if (item.targetPath) {
+      navigate(item.targetPath);
+    }
+  };
+
+  // Penyesuaian ikon agar seragam dengan gaya visual mahasiswa
+  const renderCategoryIcon = (kategori) => {
+    switch (kategori) {
+      case "pengajuan":
+        return <UserCheck size={18} strokeWidth={1.9} />;
+      case "pengumpulan":
+      case "penilaian":
+        return <ClipboardList size={18} strokeWidth={1.9} />;
+      case "pelanggaran":
+        return <AlertTriangle size={18} strokeWidth={1.9} />;
+      case "kuis":
+        return <ListChecks size={18} strokeWidth={1.9} />;
+      case "materi":
+        return <FolderOpen size={18} strokeWidth={1.9} />;
+      case "absensi":
+        return <CalendarCheck size={18} strokeWidth={1.9} />;
+      default:
+        return <Award size={18} strokeWidth={1.9} />;
+    }
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-5">
+      {/* Header Judul & Tombol Tandai Semua Dibaca */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-[24px] font-bold tracking-tight text-gray-900 sm:text-[26px]">
-            Notifikasi
+          <h1 className="text-[24px] font-bold tracking-tight text-slate-800 sm:text-[26px]">
+            Pusat notifikasi
           </h1>
-          <p className="mt-1 text-xs text-gray-400">
-            {unreadCount > 0
-              ? `${unreadCount} notifikasi belum dibaca.`
-              : "Semua notifikasi sudah dibaca."}
+          <p className="mt-1 text-[12px] text-slate-500 sm:text-[13px]">
+            Pantau aktivitas pengajuan, pengumpulan tugas, dan kehadiran mahasiswa.
           </p>
         </div>
-        {unreadCount > 0 && (
-          <button
-            type="button"
-            onClick={handleMarkAllRead}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4F46E5] hover:underline cursor-pointer self-start sm:self-auto"
-          >
-            <CheckCheck className="w-4 h-4" />
-            <span>Tandai semua sudah dibaca</span>
-          </button>
-        )}
+
+        <button
+          type="button"
+          disabled={stats.belumDibaca === 0}
+          onClick={handleMarkAllAsRead}
+          className="inline-flex h-10 items-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-4 text-[12px] font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
+        >
+          <CheckCheck size={15} className="text-slate-600" />
+          <span>Tandai semua dibaca</span>
+        </button>
       </div>
 
-      {/* Tab Filter */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-        <div className="flex border-b border-gray-100">
-          {[
-            { key: "semua", label: "Semua", count: notifikasiList.length },
-            { key: "belum_dibaca", label: "Belum dibaca", count: unreadCount },
-            { key: "sudah_dibaca", label: "Sudah dibaca", count: notifikasiList.length - unreadCount },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => handleTabChange(tab.key)}
-              className={`flex items-center gap-2 px-4 sm:px-6 py-4 text-xs font-semibold transition-colors border-b-2 cursor-pointer ${
-                activeTab === tab.key
-                  ? "border-[#4F46E5] text-[#4F46E5]"
-                  : "border-transparent text-gray-500 hover:text-gray-800"
-              }`}
-            >
-              <span>{tab.label}</span>
-              {tab.count > 0 && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  activeTab === tab.key ? "bg-[#EEF2FF] text-[#4F46E5]" : "bg-gray-100 text-gray-500"
-                }`}>
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Notifikasi List */}
-        <div className="divide-y divide-gray-50/80">
-          {pagedList.length === 0 ? (
-            <div className="py-16 text-center text-sm text-gray-400">
-              Tidak ada notifikasi di sini.
-            </div>
-          ) : (
-            pagedList.map((notif) => {
-              const IconComp = KATEGORI_ICON[notif.kategori] || FileText;
-              const colors = KATEGORI_COLOR[notif.kategori] || { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-400" };
+      {/* Grid Utama: Daftar Notifikasi (Kiri) + Ringkasan Anda (Kanan) */}
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        {/* ================= KOLOM KIRI: KARTU DAFTAR NOTIFIKASI ================= */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:col-span-9">
+          {/* Tabs Filter */}
+          <div className="flex items-center gap-6 overflow-x-auto border-b border-slate-200/80 text-[12px]">
+            {[
+              { key: "semua", label: `Semua (${stats.semua})` },
+              {
+                key: "belum_dibaca",
+                label: `Belum dibaca (${stats.belumDibaca})`,
+              },
+              {
+                key: "sudah_dibaca",
+                label: `Sudah dibaca (${stats.sudahDibaca})`,
+              },
+            ].map((tab) => {
+              const isActive = activeTab === tab.key;
               return (
-                <div
-                  key={notif.id}
-                  onClick={() => handleClickNotif(notif)}
-                  className={`flex items-start gap-4 px-5 sm:px-6 py-4 cursor-pointer transition-colors ${
-                    notif.isRead ? "hover:bg-gray-50/60" : "bg-[#FAFAFE] hover:bg-indigo-50/40"
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => handleTabChange(tab.key)}
+                  className={`whitespace-nowrap border-b-2 pb-3 font-semibold transition ${
+                    isActive
+                      ? "border-indigo-600 text-indigo-600"
+                      : "border-transparent text-slate-500 hover:text-slate-800"
                   }`}
                 >
-                  {/* Icon */}
-                  <div className={`w-10 h-10 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center shrink-0 mt-0.5`}>
-                    <IconComp className="w-5 h-5" />
-                  </div>
-                  {/* Text */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className={`text-xs leading-snug ${notif.isRead ? "font-medium text-gray-700" : "font-bold text-gray-900"}`}>
-                        {notif.judul}
-                      </p>
-                      {!notif.isRead && (
-                        <span className={`w-2 h-2 rounded-full ${colors.dot} shrink-0 mt-1`}></span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed line-clamp-2">
-                      {notif.deskripsi}
-                    </p>
-                    <p className="text-[10px] text-gray-400 mt-1.5 font-medium">{notif.waktu}</p>
-                  </div>
-                </div>
+                  {tab.label}
+                </button>
               );
-            })
+            })}
+          </div>
+
+          {/* List Item Notifikasi */}
+          {paginatedNotifications.length === 0 ? (
+            <div className="py-14 text-center text-[13px] text-slate-400">
+              Tidak ada notifikasi pada kategori ini.
+            </div>
+          ) : (
+            <div className="mt-4 space-y-2.5">
+              {paginatedNotifications.map((item) => {
+                const isUnread = !item.isRead;
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleNotificationClick(item)}
+                    className={`group relative flex cursor-pointer items-start justify-between gap-4 rounded-xl px-4 py-4 transition ${
+                      isUnread
+                        ? "bg-[#EEF2FF]/75 hover:bg-[#E0E7FF]/70"
+                        : "border-b border-slate-100 bg-white last:border-b-0 hover:bg-slate-50/80"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3.5">
+                      {/* Ikon Kategori Seragam */}
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                          isUnread
+                            ? "bg-white text-indigo-600 shadow-2xs"
+                            : "bg-indigo-50/80 text-indigo-600"
+                        }`}
+                      >
+                        {renderCategoryIcon(item.kategori)}
+                      </div>
+
+                      {/* Konten Teks Notifikasi */}
+                      <div>
+                        <h2
+                          className={`text-[13px] tracking-tight ${
+                            isUnread
+                              ? "font-bold text-slate-800"
+                              : "font-semibold text-slate-700"
+                          }`}
+                        >
+                          {item.judul}
+                        </h2>
+
+                        <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                          {item.deskripsi}
+                        </p>
+
+                        <div className="mt-2 flex items-center gap-3 text-[10px]">
+                          <span className="text-slate-400">{item.waktu}</span>
+
+                          {isUnread ? (
+                            <button
+                              type="button"
+                              onClick={(e) => handleMarkAsRead(item.id, e)}
+                              className="font-semibold text-indigo-600 hover:underline"
+                            >
+                              Tandai dibaca
+                            </button>
+                          ) : (
+                            <span className="text-slate-400">Sudah dibaca</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dot Biru Unread di Pojok Kanan Atas */}
+                    {isUnread && (
+                      <span
+                        title="Belum dibaca"
+                        className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#4F46E5]"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Pagination (< 1 2 3 >) */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-slate-100 pt-4 sm:flex-row">
+              <p className="text-[11px] text-slate-400">
+                Menampilkan {(safeCurrentPage - 1) * ITEMS_PER_PAGE + 1}–
+                {Math.min(
+                  safeCurrentPage * ITEMS_PER_PAGE,
+                  filteredNotifications.length
+                )}{" "}
+                dari {filteredNotifications.length} notifikasi
+              </p>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
+                  aria-label="Halaman sebelumnya"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+                  (pageNum) => {
+                    const isCurrent = pageNum === safeCurrentPage;
+                    return (
+                      <button
+                        key={pageNum}
+                        type="button"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`flex h-8 min-w-[32px] items-center justify-center rounded-lg px-2.5 text-[12px] font-semibold transition ${
+                          isCurrent
+                            ? "bg-[#4F46E5] text-white shadow-2xs"
+                            : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  }
+                )}
+
+                <button
+                  type="button"
+                  disabled={safeCurrentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  aria-label="Halaman berikutnya"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between gap-2 px-5 sm:px-6 py-3.5 border-t border-gray-50">
-            <p className="text-[11px] text-gray-400">
-              Halaman {currentPage} dari {totalPages}
-            </p>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setCurrentPage(p)}
-                  className={`w-7 h-7 rounded-lg text-xs font-semibold cursor-pointer ${
-                    currentPage === p
-                      ? "bg-[#4F46E5] text-white"
-                      : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+        {/* ================= KOLOM KANAN: RINGKASAN ANDA ================= */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:col-span-3">
+          <h2 className="text-[15px] font-bold text-slate-800">
+            Ringkasan Anda
+          </h2>
+
+          <p className="mt-4 text-[34px] font-bold leading-none tracking-tight text-indigo-600">
+            {stats.belumDibaca}
+          </p>
+          <p className="mt-2 text-[12px] text-slate-500">
+            notifikasi belum dibaca
+          </p>
+
+          {/* Badge Status Penting Dosen */}
+          <div className="mt-4 flex flex-col items-start gap-2">
+            {stats.pengajuanBaru > 0 && (
+              <span className="rounded-md bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-700">
+                {stats.pengajuanBaru} pengajuan izin/sakit baru
+              </span>
+            )}
+            {stats.pengumpulanTugas > 0 && (
+              <span className="rounded-md bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">
+                {stats.pengumpulanTugas} pengumpulan tugas masuk
+              </span>
+            )}
+            {stats.pelanggaranDeteksi > 0 && (
+              <span className="rounded-md bg-red-50 px-2.5 py-1 text-[10px] font-bold text-red-700">
+                {stats.pelanggaranDeteksi} laporan pelanggaran
+              </span>
+            )}
+            {stats.pengajuanBaru === 0 &&
+              stats.pengumpulanTugas === 0 &&
+              stats.pelanggaranDeteksi === 0 && (
+                <span className="rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
+                  Semua informasi sudah terbaca
+                </span>
+              )}
           </div>
-        )}
+
+          <p className="mt-5 text-[11px] leading-relaxed text-slate-400">
+            Notifikasi menampilkan aktivitas akademik dan laporan penting dari kelas Anda.
+          </p>
+        </div>
       </div>
     </div>
   );
