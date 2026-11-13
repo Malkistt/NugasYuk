@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowRight,
   BookOpen,
   Eye,
   EyeOff,
-  LockKeyhole,
   Mail,
   ShieldCheck,
   GraduationCap,
@@ -219,8 +217,8 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={
                     role === "mahasiswa"
-                      ? "nadia.rahma@student.cakrawala.ac.id"
-                      : "nadia.rahma@cakrawala.ac.id"
+                      ? "nadia.rahma@student.kampus.ac.id"
+                      : "nadia.rahma@kampus.ac.id"
                   }
                   className="h-[44px] w-full rounded-lg border border-slate-200 bg-white px-3 pr-11 text-[12px] text-slate-700 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                 />
@@ -302,7 +300,7 @@ export default function RegisterPage() {
                   <a href="#privasi" className="text-indigo-600 hover:underline">
                     Kebijakan Privasi
                   </a>{" "}
-                  Ruangkuliah.
+                  NugasYuk.
                 </span>
               </label>
             </div>
@@ -333,7 +331,7 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <footer className="flex flex-col items-center justify-between gap-3 pb-1 text-[10px] text-slate-400 sm:flex-row">
-          <span>© 2026 Ruangkuliah</span>
+          <span>© 2026 NugasYuk</span>
           <div className="flex items-center gap-2">
             <a href="#privasi" className="transition hover:text-indigo-600">Privasi</a>
             <span>·</span>
