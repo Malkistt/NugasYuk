@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LayoutGrid, FileText, CheckSquare, FolderOpen, UserCheck, Bell, ShieldCheck, HelpCircle, GraduationCap, X } from "lucide-react";
-
 const SidebarDosen = ({ 
   activePage = "dashboard", 
   isOpen = false, 
@@ -12,7 +11,6 @@ const SidebarDosen = ({
   semesterText = "Ganjil 2026/2027" 
 }) => {
   const navigate = useNavigate();
-
   const mainNav = [
     { id: "dashboard", label: "Dashboard", icon: LayoutGrid, path: "/dashboarddosen" },
     { id: "tugas", label: "Tugas", icon: FileText, path: "/tugas" },
@@ -20,24 +18,20 @@ const SidebarDosen = ({
     { id: "materi", label: "Materi", icon: FolderOpen, path: "/materi" },
     { id: "absensi", label: "Absensi", icon: UserCheck, path: "/absensi" },
   ];
-
   const personalNav = [
-    { id: "notifikasi", label: "Notifikasi", icon: Bell, badge: 4 },
-    { id: "profil", label: "Profil & keamanan", icon: ShieldCheck },
+    { id: "notifikasi", label: "Notifikasi", icon: Bell, badge: 4, path: "/dosen/notifikasi" },
+    { id: "profil", label: "Profil & keamanan", icon: ShieldCheck, path: "/dosen/profil" },
   ];
-
   const handleNavigation = (item) => {
     if (item.path) {
       navigate(item.path);
     }
     if (onClose) onClose();
   };
-
   // Hitung persentase progres indikator pertemuan
   const validTotal = Math.max(1, totalPertemuan);
   const clampedPertemuan = Math.min(validTotal, Math.max(1, currentPertemuan));
   const progressPercentage = Math.min(100, Math.max(0, (clampedPertemuan / validTotal) * 100));
-
   return (
     <>
       {/* Overlay Backdrop for Mobile */}
@@ -48,14 +42,13 @@ const SidebarDosen = ({
           aria-hidden="true" 
         />
       )}
-
       {/* Main Sidebar */}
       <aside
         className={`
           fixed lg:sticky top-0 left-0 z-50
           w-64 h-screen bg-white border-r border-gray-100/90
           flex flex-col justify-between p-5
-          transition-transform duration-300 ease-in-out shrink-0
+           transition-transform duration-300 ease-in-out shrink-0
           ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
@@ -79,7 +72,6 @@ const SidebarDosen = ({
               <X className="w-5 h-5" />
             </button>
           </div>
-
           {/* Info Fakultas */}
           <div className="bg-[#f8f9fa] border border-gray-100 rounded-xl p-3.5">
             <p className="text-[10px] font-bold text-gray-900 tracking-wider uppercase">FAKULTAS INFORMATIKA</p>
@@ -88,7 +80,6 @@ const SidebarDosen = ({
               Ruang Dosen
             </span>
           </div>
-
           {/* Menu Perkuliahan */}
           <div>
             <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">PERKULIAHAN</p>
@@ -108,12 +99,11 @@ const SidebarDosen = ({
                   >
                     <Icon className={`w-4 h-4 ${isActive ? "text-[#4F46E5]" : "text-gray-400"}`} />
                     <span>{item.label}</span>
-                  </button>
+                     </button>
                 );
               })}
             </nav>
           </div>
-
           {/* Menu Personal */}
           <div>
             <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">PERSONAL</p>
@@ -124,7 +114,8 @@ const SidebarDosen = ({
                 return (
                   <button
                     key={item.id}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                    onClick={() => handleNavigation(item)}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                       isActive 
                         ? "bg-[#EEF2FF] text-[#4F46E5] font-semibold" 
                         : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
@@ -145,7 +136,6 @@ const SidebarDosen = ({
             </nav>
           </div>
         </div>
-
         {/* Footer Sidebar (Indikator Proses Pertemuan Semester & Bantuan) */}
         <div className="pt-4 border-t border-gray-100/80 space-y-3">
           <div className="bg-[#EEF2FF]/60 border border-[#E0E7FF]/70 rounded-2xl p-3.5">
@@ -155,16 +145,14 @@ const SidebarDosen = ({
                 {Math.round(progressPercentage)}%
               </span>
             </div>
-
             <div className="flex items-center justify-between mt-1.5">
               <p className="text-[11px] text-gray-600">
                 Pertemuan <span className="font-bold text-[#4F46E5]">{clampedPertemuan}</span> dari {validTotal}
               </p>
-
               {/* Kontrol Penyesuaian Pertemuan (1 sampai 16) */}
               {onPertemuanChange && (
                 <div className="flex items-center gap-1">
-                  <button
+                   <button
                     type="button"
                     onClick={() => onPertemuanChange(Math.max(1, clampedPertemuan - 1))}
                     disabled={clampedPertemuan <= 1}
@@ -187,7 +175,6 @@ const SidebarDosen = ({
                 </div>
               )}
             </div>
-
             {/* Progress Bar Dinamis */}
             <div className="w-full bg-[#E0E7FF] h-1.5 rounded-full mt-2.5 overflow-hidden">
               <div 
@@ -196,8 +183,14 @@ const SidebarDosen = ({
               />
             </div>
           </div>
-
-          <button className="w-full flex items-center gap-2.5 text-xs text-gray-500 hover:text-gray-800 px-1 py-1 transition-colors">
+          <button 
+            type="button"
+            onClick={() => {
+              navigate('/dosen/bantuan');
+              if (onClose) onClose();
+            }}
+            className="w-full flex items-center gap-2.5 text-xs text-gray-500 hover:text-gray-800 px-1 py-1 transition-colors cursor-pointer"
+          >
             <HelpCircle className="w-4 h-4 text-gray-400" />
             <span>Pusat bantuan</span>
           </button>
@@ -206,5 +199,4 @@ const SidebarDosen = ({
     </>
   );
 };
-
 export default SidebarDosen;
